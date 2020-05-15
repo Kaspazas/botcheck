@@ -10,42 +10,41 @@
 
 
 botcheck = function(user) {
-  
+
   users_url = "https://api.twitter.com/1.1/users/show.json?screen_name="
   statuses_url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name="
   search_url = "https://api.twitter.com/1.1/search/tweets.json?q=%40"
   opts = "&count=200"
-  
+
   # API call to get user
   userdata = GET(paste0(users_url,user,opts), sig)
-  
+
   # API call to get tweets
   tweets = GET(paste0(statuses_url,user,opts), sig)
-  
+
   # API call to get mentions
   mentions = GET(paste0(search_url,user,opts), sig)
-  
-  
+
+
   # Put everything in a list
   body = list(
     timeline = content(tweets, type="application/json"),
     mentions = content(mentions, type="application/json"),
     user = content(userdata, type="application/json")
   )
-  
+
   # Convert to JSON
   body_json = RJSONIO::toJSON(body, auto_unbox = T, pretty = T)
-  
+
   # Make the API request
-  result = POST("https://osome-botometer.p.mashape.com/2/check_account",
+  result = POST("https://botometer-pro.p.rapidapi.com/2/check_account",
                  encode="json",
-                 add_headers(`X-Mashape-Key`=Mashape_key),
+                 add_headers(`x-rapidapi-key`=Mashape_key),
                  body=body_json)
-  
+
   # Parse result
   result = content(result, as = "parsed")
-  
+
   # Return "English" score
   return(result$scores$english)
 }
-
